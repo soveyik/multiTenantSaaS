@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "W7+NYT2N3HczGW32BO5vy27iAaJk9uHuJFwKwA3rBMA=",
+  "Source": "MultiTenantSaaS",
+  "BasePath": "_content/MultiTenantSaaS",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
