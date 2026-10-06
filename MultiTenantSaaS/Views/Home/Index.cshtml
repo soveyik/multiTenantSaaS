@@ -1,0 +1,85 @@
+@model IEnumerable<Urun>
+@{
+    ViewData["Title"] = "Ürünler";
+    // Eğer firma ayarı Kırmızı Tema ise kırmızı buton sınıfını, değilse mavi buton sınıfını seçiyoruz
+    var btnClass = ViewBag.Ayar == "Kirmizi Tema" ? "btn-danger" : "btn-primary";
+}
+
+<style>
+    .product-card {
+        border-radius: 1rem;
+        border: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+    .product-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #2c3e50;
+    }
+    .product-desc {
+        font-size: 0.9rem;
+        color: #6c757d;
+        min-height: 45px;
+    }
+    .price-tag {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #2b2b2b;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <h2 class="fw-bold m-0 text-dark">Mağaza</h2>
+</div>
+
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <h5 class="text-muted">Bu firmaya ait ürün bulunamadı.</h5>
+        </div>
+    }
+    
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 product-card position-relative">
+                <span class="badge bg-secondary product-badge">KOD: @item.UrunKodu</span>
+                
+                <div class="card-body p-4 d-flex flex-column">
+                    <h5 class="card-title product-title mb-2">@item.Ad</h5>
+                    <p class="product-desc mb-4">@item.Aciklama</p>
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted small">Fiyat</span>
+                            <span class="price-tag">@item.Fiyat.ToString("C")</span>
+                        </div>
+                        
+                        <form asp-controller="Siparis" asp-action="SepeteEkle" method="post">
+                            <input type="hidden" name="urunId" value="@item.Id" />
+                            <div class="input-group">
+                                <input type="number" name="adet" class="form-control text-center" value="1" min="1" style="max-width: 70px; border-top-left-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" />
+                                <button type="submit" class="btn @btnClass flex-grow-1" style="border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; font-weight: 600;">
+                                    Sepete Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

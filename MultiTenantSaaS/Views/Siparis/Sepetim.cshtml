@@ -1,0 +1,119 @@
+@model IEnumerable<SepetDetay>
+@{
+    ViewData["Title"] = "Sepetim";
+    decimal total = Model.Sum(c => c.Adet * (c.Urun?.Fiyat ?? 0));
+}
+
+<style>
+    .cart-card {
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border: none;
+        background: #fff;
+    }
+    .checkout-form {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid #e9ecef;
+    }
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+    }
+    .btn-checkout {
+        padding: 0.75rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0">Alışveriş Sepetim</h2>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Alışverişe Dön</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 cart-card">
+            <h4 class="text-muted mb-3">Sepetiniz şu an boş.</h4>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 py-2">Hemen Ürün Ekle</a>
+        </div>
+    }
+    else
+    {
+        <div class="row gx-5">
+            <!-- Sepet Ürünleri Tablosu -->
+            <div class="col-lg-7 mb-4">
+                <div class="cart-card p-4">
+                    <h5 class="mb-4 border-bottom pb-2">Sipariş Özeti (@Model.Sum(x => x.Adet) Ürün)</h5>
+                    <table class="table table-borderless align-middle">
+                        <thead class="text-muted small text-uppercase">
+                            <tr>
+                                <th>Ürün Adı</th>
+                                <th class="text-center">Adet</th>
+                                <th class="text-end">Birim Fiyat</th>
+                                <th class="text-end">Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="border-bottom">
+                                    <td class="py-3">
+                                        <div class="fw-bold">@item.Urun?.Ad</div>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span class="badge bg-light text-dark px-3 py-2 border">@item.Adet</span>
+                                    </td>
+                                    <td class="py-3 text-end text-muted">@item.Urun?.Fiyat.ToString("C")</td>
+                                    <td class="py-3 text-end fw-bold">@((item.Adet * (item.Urun?.Fiyat ?? 0)).ToString("C"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Teslimat ve Ödeme Formu -->
+            <div class="col-lg-5">
+                <div class="checkout-form">
+                    <h5 class="mb-4 border-bottom pb-2">Teslimat Bilgileri</h5>
+                    <form asp-controller="Siparis" asp-action="SiparisOlustur" method="post">
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Teslimat Adresi</label>
+                            <textarea name="adres" class="form-control" rows="3" required placeholder="Lütfen açık adresinizi girin..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">İletişim Numarası</label>
+                            <input type="tel" name="telefon" class="form-control" required placeholder="05XX XXX XX XX" />
+                        </div>
+
+                        <div class="card bg-white border-0 shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Ara Toplam</span>
+                                    <span>@total.ToString("C")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Kargo</span>
+                                    <span class="text-success">Ücretsiz</span>
+                                </div>
+                                <hr />
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold fs-5">Ödenecek Tutar</span>
+                                    <span class="fw-bold fs-5 text-primary">@total.ToString("C")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-checkout">Siparişi Onayla ve Tamamla</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

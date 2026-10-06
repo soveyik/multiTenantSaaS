@@ -1,0 +1,36 @@
+@model IEnumerable<Siparis>
+@{
+    ViewData["Title"] = "Siparişlerim";
+}
+
+<h2>Siparişlerim</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <p>Henüz siparişiniz bulunmamaktadır.</p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Sipariş ID (GUID)</th>
+                <th>Tarih</th>
+                <th>Toplam Tutar</th>
+                <th>Ürün Sayısı (Çeşit)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var siparis in Model)
+            {
+                <tr>
+                    <td><small class="text-muted">@siparis.Id</small></td>
+                    <td>@siparis.SiparisTarihi.ToString("g")</td>
+                    <td>@siparis.ToplamTutar.ToString("C")</td>
+                    <td>@siparis.SiparisDetaylari.Count()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

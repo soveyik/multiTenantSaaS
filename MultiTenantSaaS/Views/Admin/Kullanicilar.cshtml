@@ -1,0 +1,36 @@
+@model IEnumerable<Kullanici>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+}
+
+<h2>Firma Kullanıcıları (Admin Paneli)</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Hiç kullanıcı bulunamadı.</div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Kullanıcı GUID</th>
+                <th>Firma (Tenant) ID</th>
+                <th>Kullanıcı Adı</th>
+                <th>Şifre</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var k in Model)
+            {
+                <tr>
+                    <td><small>@k.Id</small></td>
+                    <td><small>@k.FirmaId</small></td>
+                    <td><strong>@k.KullaniciAdi</strong></td>
+                    <td><span class="text-muted">@k.Sifre</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
