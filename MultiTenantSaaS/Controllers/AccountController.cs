@@ -18,15 +18,15 @@ namespace MultiTenantSaaS.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login() //giriş formunu getirir
         {
             return View();
         }
 
-        [HttpPost]
+        [HttpPost]  //giriş butonuna bastıktan sonra çalışan metot
         public async Task<IActionResult> Login(string firmaKodu, string kullaniciAdi, string sifre)
         {
-            // kullanıcının girdiği firma koduna göre sistemi belirliyoruz
+            // kullanıcının girdiği firma koduna göre aktif firma var mı korntolü
             var firma = _context.Firmalar.FirstOrDefault(f => f.FirmaKodu == firmaKodu);
             if (firma == null)
             {
@@ -42,10 +42,10 @@ namespace MultiTenantSaaS.Controllers
                 ViewBag.Error = "Kullanıcı adı veya şifre hatalı.";
                 return View();
             }
-
+            // ASP.NET Core Identity'nin resmi şifre doğrulama aracını ayağa kaldırıyoruz
             // şifre doğrulama işlemi yapıyoruz (hash kontrolü)
             var hasher = new PasswordHasher<Kullanici>();
-            var passwordResult = hasher.VerifyHashedPassword(kullanici, kullanici.Sifre, sifre);
+            var passwordResult = hasher.VerifyHashedPassword(kullanici, kullanici.Sifre, sifre);// Kullanıcının formda yazdığı düz şifreyi ('sifre'), veritabanındaki hash'li metinle ('kullanici.Sifre') kıyaslıyoruz.
 
             if (passwordResult != PasswordVerificationResult.Success)
             {
@@ -53,7 +53,7 @@ namespace MultiTenantSaaS.Controllers
                 return View();
             }
 
-            // kimlik doğrulama işlemleri için gerekli bilgileri hazırlıyoruz
+            // giriş basarılı olfuğunda çerezlere yazılacak bilgiler hazırlanır
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, kullanici.Id.ToString()),
@@ -61,10 +61,11 @@ namespace MultiTenantSaaS.Controllers
                 new Claim("FirmaId", firma.Id.ToString())
             };
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+            //claim listesi ile bir kimlik oluşturuluyor
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme); 
+            var principal = new ClaimsPrincipal(identity); //kimliğin sahibi
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal); //çerezlere yazıoz
 
             return RedirectToAction("Index", "Home");
         }

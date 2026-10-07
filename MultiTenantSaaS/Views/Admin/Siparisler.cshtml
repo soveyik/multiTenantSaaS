@@ -32,27 +32,40 @@ else
                     <td>@siparis.ToplamTutar.ToString("C")</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#order-@siparis.Id">
-                            Ürünleri Gör
+                            Detay
                         </button>
                     </td>
                 </tr>
                 <tr class="collapse" id="order-@siparis.Id">
                     <td colspan="5">
-                        <div class="mb-3 p-3 bg-light rounded">
+                        <div class="mb-3 p-3 bg-light rounded border">
+                            <h6 class="fw-bold border-bottom pb-2">Sipariş Bilgileri</h6>
                             <strong>Sipariş Veren:</strong> @siparis.Kullanici?.KullaniciAdi <br/>
                             <strong>Sipariş Tarihi:</strong> @siparis.SiparisTarihi.ToString("g") <br/>
                             <strong>İletişim:</strong> @siparis.Telefon <br/>
                             <strong>Teslimat Adresi:</strong> @siparis.Adres
                         </div>
-                        <ul class="list-group">
-                            @foreach (var item in siparis.SiparisDetaylari)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    @item.Urun?.Ad
-                                    <span class="badge bg-primary rounded-pill">@item.Adet adet x @item.BirimFiyat.ToString("C")</span>
-                                </li>
-                            }
-                        </ul>
+                        
+                        <h6 class="fw-bold px-1">Sipariş Edilen Ürünler</h6>
+                        @if (siparis.SiparisDetaylari != null && siparis.SiparisDetaylari.Any())
+                        {
+                            <ul class="list-group mb-2">
+                                @foreach (var item in siparis.SiparisDetaylari)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-box-seam me-2"></i>
+                                            @(item.Urun?.Ad ?? "Silinmiş/Bilinmeyen Ürün")
+                                        </span>
+                                        <span class="badge bg-primary rounded-pill">@item.Adet adet x @item.BirimFiyat.ToString("C")</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning py-2">Bu siparişte ürün detayı bulunmuyor.</div>
+                        }
                     </td>
                 </tr>
             }

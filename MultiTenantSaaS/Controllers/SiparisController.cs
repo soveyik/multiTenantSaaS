@@ -16,7 +16,7 @@ namespace MultiTenantSaaS.Controllers
             _context = context;
         }
 
-        // cookie'den giriş yapan kullanıcının firma bilgisini alıyoruz
+        // aktif firmanin id bilgisi
         private Guid GetFirmaId() => Guid.Parse(User.FindFirst("FirmaId")!.Value);
         
         // cookie'den giriş yapan kullanıcının kendi id bilgisini alıyoruz
@@ -28,21 +28,21 @@ namespace MultiTenantSaaS.Controllers
             var firmaId = GetFirmaId();
             var kullaniciId = GetKullaniciId();
 
-            // güvenlik: ürün gerçekten bu firmaya mı ait kontrol ediyoruz
+            // yetki kontrolu
             var urun = _context.Urunler.FirstOrDefault(p => p.Id == urunId && p.TenantId == firmaId);
             if (urun == null) return NotFound("Ürün bulunamadı veya bu firmaya ait değil.");
 
-            // sepette aynı üründen var mı diye bakıyoruz
+            // mevcut urun kontrolu
             var sepetDetay = _context.SepetDetaylari.FirstOrDefault(c => c.UrunId == urunId && c.KullaniciId == kullaniciId && c.TenantId == firmaId);
             
             if (sepetDetay != null)
             {
-                // varsa sadece adeti artırıyoruz
+                // adet artisi
                 sepetDetay.Adet += adet;
             }
             else
             {
-                // yoksa sepete yeni ürün olarak ekliyoruz
+                // yeni urun kaydi
                 _context.SepetDetaylari.Add(new SepetDetay
                 {
                     Id = Guid.NewGuid(),
@@ -62,7 +62,7 @@ namespace MultiTenantSaaS.Controllers
             var firmaId = GetFirmaId();
             var kullaniciId = GetKullaniciId();
 
-            // sadece mevcut kullanıcının ve firmanın sepetini getiriyoruz
+            // guncel sepet verisi
             var sepetDetaylari = _context.SepetDetaylari
                 .Include(c => c.Urun)
                 .Where(c => c.TenantId == firmaId && c.KullaniciId == kullaniciId)
@@ -77,7 +77,7 @@ namespace MultiTenantSaaS.Controllers
             var firmaId = GetFirmaId();
             var kullaniciId = GetKullaniciId();
 
-            // sepetteki ürünleri veritabanından çekiyoruz
+            // sepetteki urunler
             var sepetDetaylari = _context.SepetDetaylari
                 .Include(c => c.Urun)
                 .Where(c => c.TenantId == firmaId && c.KullaniciId == kullaniciId)
@@ -85,7 +85,7 @@ namespace MultiTenantSaaS.Controllers
 
             if (!sepetDetaylari.Any()) return RedirectToAction("Sepetim");
 
-            // ana sipariş kaydını oluşturuyoruz
+            // ana siparis kaydi
             var siparis = new Siparis
             {
                 Id = Guid.NewGuid(),
@@ -97,7 +97,7 @@ namespace MultiTenantSaaS.Controllers
                 Telefon = telefon ?? ""
             };
 
-            // sepetteki her ürünü sipariş detaylarına ekliyoruz
+            // siparis detaylarinin eklenmesi
             foreach (var item in sepetDetaylari)
             {
                 siparis.SiparisDetaylari.Add(new SiparisDetay
@@ -105,13 +105,13 @@ namespace MultiTenantSaaS.Controllers
                     Id = Guid.NewGuid(),
                     UrunId = item.UrunId,
                     Adet = item.Adet,
-                    BirimFiyat = item.Urun!.Fiyat
+                    BirimFiyat = item.Urun!.Fiyat // anlik fiyat kaydi
                 });
             }
 
             _context.Siparisler.Add(siparis);
             
-            // sipariş tamamlandığı için sepeti temizliyoruz
+            // sepeti temizleme islemi
             _context.SepetDetaylari.RemoveRange(sepetDetaylari); 
             _context.SaveChanges();
 
@@ -123,7 +123,7 @@ namespace MultiTenantSaaS.Controllers
             var firmaId = GetFirmaId();
             var kullaniciId = GetKullaniciId();
 
-            // sadece bu firmanın ve bu kullanıcının siparişlerini listeliyoruz
+            // filtreleme islemine gore siparis listesi
             var siparisler = _context.Siparisler
                 .Include(o => o.SiparisDetaylari)
                 .ThenInclude(oi => oi.Urun)
