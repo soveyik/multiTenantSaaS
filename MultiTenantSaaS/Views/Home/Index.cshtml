@@ -40,8 +40,23 @@
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-    <h2 class="fw-bold m-0 text-dark">Mağaza</h2>
+<div class="row align-items-center mb-4 mt-2">
+    <div class="col-md-4">
+        <h2 class="fw-bold m-0 text-dark">Mağaza</h2>
+    </div>
+    <div class="col-md-8">
+        <form asp-controller="Search" asp-action="Index" method="get" class="d-flex w-100">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white border-end-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search text-muted" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </span>
+                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Ürün adı, açıklaması veya koduna göre ara..." required />
+                <button class="btn btn-dark px-4" type="submit">Hızlı Ara</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="row g-4">

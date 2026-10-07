@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MultiTenantSaaS</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
@@ -36,6 +37,19 @@
                                     <li><a class="dropdown-item" asp-controller="Admin" asp-action="Kullanicilar">Kullanıcı Listesi</a></li>
                                 </ul>
                             </li>
+                            
+                            <!-- Test Data Button -->
+                            @inject MultiTenantSaaS.Data.UygulamaDbContext DbContext
+                            @if (!DbContext.Urunler.Any())
+                            {
+                                <li class="nav-item ms-3 d-flex align-items-center">
+                                    <form asp-controller="Search" asp-action="SeedData" method="post" class="m-0">
+                                        <button type="submit" class="btn btn-warning btn-sm fw-bold">
+                                            <i class="bi bi-database-add"></i> 100K Test Verisi Üret
+                                        </button>
+                                    </form>
+                                </li>
+                            }
                         }
                     </ul>
                     <ul class="navbar-nav">

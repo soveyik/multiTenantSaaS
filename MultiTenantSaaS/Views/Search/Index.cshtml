@@ -1,0 +1,83 @@
+@model List<MultiTenantSaaS.Models.UrunAramaModeli>
+@{
+    ViewData["Title"] = "Ürün Arama Sonuçları";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0 text-dark">Arama Sonuçları</h2>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm">Mağazaya Dön</a>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm mb-4">
+            <strong>İşlem Başarılı:</strong> @TempData["Message"]
+        </div>
+    }
+
+
+
+    <!-- Search Form -->
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" placeholder="Ürün adı, açıklaması veya koduna göre ara..." value="@ViewBag.Keyword" autocomplete="off" />
+                <button class="btn btn-primary px-4" type="submit">Ara</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    @if (ViewBag.Source != null)
+    {
+        <div class="alert alert-info shadow-sm border-0">
+            <strong>Aranan Kelime:</strong> @ViewBag.Keyword
+        </div>
+    }
+
+    <!-- Results Table -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive shadow-sm">
+            <table class="table table-hover table-bordered align-middle mb-0 bg-white">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th>Ürün Kodu</th>
+                        <th>Ürün Adı</th>
+                        <th>Açıklama</th>
+                        <th class="text-end">Fiyat</th>
+                        <th class="text-center" style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-secondary">@item.UrunKodu</span></td>
+                            <td class="fw-bold">@item.Ad</td>
+                            <td class="text-muted" style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@item.Aciklama</td>
+                            <td class="text-end text-success fw-bold">@item.Fiyat.ToString("C2")</td>
+                            <td class="text-center">
+                                <form asp-controller="Siparis" asp-action="SepeteEkle" method="post" class="m-0">
+                                    <input type="hidden" name="urunId" value="@item.Id" />
+                                    <input type="hidden" name="adet" value="1" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Sepete Ekle">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ViewBag.Keyword))
+    {
+        <div class="alert alert-warning border-0 shadow-sm text-center py-4">
+            <h5 class="mb-1">Sonuç Bulunamadı</h5>
+            <p class="mb-0 text-muted">"<b>@ViewBag.Keyword</b>" ile eşleşen bir ürün bulunamadı. Lütfen başka bir kelime deneyin.</p>
+        </div>
+    }
+</div>

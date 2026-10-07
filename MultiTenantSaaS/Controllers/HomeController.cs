@@ -21,8 +21,8 @@ namespace MultiTenantSaaS.Controllers
 
             var firmaId = Guid.Parse(firmaIdStr);
             
-            // veritabanından sadece bulunduğumuz firmaya ait ürünleri çekiyoruz
-            var urunler = _context.Urunler.Where(p => p.TenantId == firmaId).ToList();
+            // veritabanından sadece bulunduğumuz firmaya ait ürünleri çekiyoruz (performans için sadece ilk 50)
+            var urunler = _context.Urunler.Where(p => p.TenantId == firmaId).Take(50).ToList();
 
             // firmanın tema veya diğer ayarlarını view'a yolluyoruz
             var firma = _context.Firmalar.Find(firmaId);
